@@ -45,10 +45,17 @@ def main():
         f.write(bytes_data)
 
 
-  # uploaded_files = st.file_uploader("You can upload multiple PDF files.", 
-  #                                 type=["pdf"], 
-  #                                 accept_multiple_files=True,
-  #                                 label_visibility='visible')
+  uploaded_files = st.file_uploader("You can upload multiple PDF files.", 
+                                  type=["pdf"], 
+                                  accept_multiple_files=True,
+                                  label_visibility='visible')
+  
+  if len(uploaded_files)>0:
+    bytes_data = uploaded_files.read()
+    st.write(bytes_data)
+
+    with open(os.path.join(os.getcwd(), "dataset.txt"),"wb") as f: 
+        f.write(bytes_data)
                           
   # # Button to trigger the file upload process
   # if len(uploaded_files)>0:
