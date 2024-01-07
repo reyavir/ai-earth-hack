@@ -41,6 +41,9 @@ def main():
     bytes_data = uploaded_rubric.read()
     st.write(bytes_data)
 
+    with open(os.path.join(os.getcwd(), "rubric.txt"),"wb") as f: 
+        f.write(bytes_data)
+
 
   # uploaded_files = st.file_uploader("You can upload multiple PDF files.", 
   #                                 type=["pdf"], 
