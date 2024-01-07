@@ -8,7 +8,7 @@ import pandas as pd
 from io import StringIO
 from createmodels import * 
 
-os.environ["OPENAI_API_KEY"] = "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"
+# os.environ["OPENAI_API_KEY"] = "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"
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # if the key already exists in the environment variables, it will use that, otherwise it will use the .env file to get the key
 if not OPENAI_API_KEY:
@@ -25,7 +25,7 @@ def main():
   if 'assistant' not in st.session_state:
      st.session_state['assistant'] = None
 
-  client = OpenAI()
+
   domain_expert_value = st.slider('Domain Expert', 0, 5, 2)
   engineer_value = st.slider('Software Engineer', 0, 5, 2)
   designer_value = st.slider('UX/UI Designer', 0, 5, 2)
@@ -63,9 +63,10 @@ def main():
   if uploaded_ideas is not None:
     # Read the file with pandas
     df = pd.read_csv(uploaded_ideas, encoding='latin-1')
+    short_df = df.head(5)
     
     # Show the content of the CSV file
-    st.write(df)
+    st.write(short_df)
     
   # Evaluate the CSV file
   
@@ -78,7 +79,7 @@ def main():
     Scalability, Idea shows little to no potential for growth or adaptation. (1), Idea shows some potential for growth or adaptation. (2), Idea shows considerable potential for growth or adaptation. (3), Idea shows extensive potential for growth or adaptation. (4)
     """
   
-  new_df = process_dataframe_with_evaluation(df, sample_rubric)
-  st.write(new_df)
+  new_df = process_dataframe_with_evaluation(short_df, sample_rubric, OPENAI_API_KEY)
+  st.write(short_df)
   
                           

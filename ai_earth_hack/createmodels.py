@@ -19,10 +19,10 @@ if not OPENAI_API_KEY:
 
 
 # ps_pair should be a single string connect the "problem" and "solution" value by a newline 
-def identify_domain(ps_pair):
+def identify_domain(ps_pair, api_key):
     
     client = OpenAI(
-        api_key = OPENAI_API_KEY
+        api_key = api_key
     )
     
     prompt_text = f"""
@@ -60,10 +60,10 @@ Problem-Solution Pair:
 
 
 # Create prompt to evaluate an idea
-def prompt_for_domain_expert_idea_evaluation(category, ps_pair, rubric):
+def prompt_for_domain_expert_idea_evaluation(category, ps_pair, rubric, api_key):
     
     client = OpenAI(
-        api_key = OPENAI_API_KEY
+        api_key = api_key
     )
 
     # Format the prompt to ask GPT to pretend to be an expert in the given category
@@ -100,7 +100,7 @@ def prompt_for_domain_expert_idea_evaluation(category, ps_pair, rubric):
 
 
 # Given then output above, extract the numbers to calculate the total score by this expert
-def extract_total_score(evaluation):
+def extract_total_score(evaluation, api_key):
     # Extract all numbers using regular expression
     numbers = re.findall(r'\d+', evaluation)
     
@@ -113,10 +113,10 @@ def extract_total_score(evaluation):
 # In[40]:
 
 
-def prompt_for_business_team_evaluation(team_role, ps_pair, rubric):
+def prompt_for_business_team_evaluation(team_role, ps_pair, rubric, api_key):
     
     client = OpenAI(
-        api_key = OPENAI_API_KEY
+        api_key = api_key
     )
 
     # Format the prompt to ask GPT to pretend to be an expert in the given category
@@ -152,9 +152,9 @@ def prompt_for_business_team_evaluation(team_role, ps_pair, rubric):
 # In[41]:
 
 
-def summarize_reasoning(combined_evals):
+def summarize_reasoning(combined_evals, api_key):
     client = OpenAI(
-        api_key = OPENAI_API_KEY
+        api_key = api_key
     )
 
     # Format the prompt to ask GPT to pretend to be an expert in the given category
@@ -199,35 +199,35 @@ There can also be a responsible framework of second hand consumer electronic goo
 """
 
 
-def evaluate_and_output_score(ps_pair, rubric):
+def evaluate_and_output_score(ps_pair, rubric, api_key):
     
     all_evals = []
-    domains = identify_domain(ps_pair)
-    domain_expert_eval = prompt_for_domain_expert_idea_evaluation(domains, rubric, ps_pair)
+    domains = identify_domain(ps_pair, api_key)
+    domain_expert_eval = prompt_for_domain_expert_idea_evaluation(domains, rubric, ps_pair, api_key)
     all_evals.append(domain_expert_eval)
 
     team_roles = ['Product Designer', 'Business Analyst', 'Marketing Specialist', 'Supply Chain Manager']
     for role in team_roles:
-        all_evals.append(prompt_for_business_team_evaluation(role, sample_rubric, sample_ps_pair2))
+        all_evals.append(prompt_for_business_team_evaluation(role, sample_rubric, sample_ps_pair2, api_key))
         
     total_score = 0
     for eval in all_evals:
-        total_score += extract_total_score(eval)
+        total_score += extract_total_score(eval, api_key)
         
-    overall_reasoning = summarize_reasoning("\n".join(all_evals))
+    overall_reasoning = summarize_reasoning("\n".join(all_evals), api_key)
     
     return total_score, overall_reasoning
     
 
-def process_dataframe_with_evaluation(df, rubric):
+def process_dataframe_with_evaluation(df, rubric, api_key):
     # Add a new column to the dataframe to store the evaluation results
-    df['Final_Evaluation'] = None
-    df['Overall_Reasoning'] = None
+    df['final_eval'] = None
+    df['overall_reasoning'] = None
     
     for index, row in df.iterrows():
         # Join the 'Problem' and 'Solution' text
-        ps_pair = f"Problem: {row['Problem']}\nSolution: {row['Solution']}"
+        ps_pair = f"Problem: {row['problem']}\nSolution: {row['solution']}"
         # Call the function 'evaluate_pairs' on the ps_pair and store the result in the new column
-        df.at[index, 'Final_Evaluation'], df.at[index, 'Overall_Reasoning'] = evaluate_and_output_score(ps_pair, rubric)
+        df.at[index, 'final_eval'], df.at[index, 'overall_reasoning'] = evaluate_and_output_score(ps_pair, rubric, api_key)
     
     return df
