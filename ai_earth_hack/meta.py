@@ -3,7 +3,7 @@ import streamlit as st
 
 def meta():
     st.set_page_config(page_icon="⚗️", page_title="Omnigpt", layout="wide") # or layout='centered'
-    st.write("# 🌎 Ask Anything to Multiple PDF Files")
+    st.write("# Idea Validator for Circular Economy Business Ideas")
 
     # Hide the made with Streamlit footer
     hide_streamlit_style = """
@@ -25,13 +25,6 @@ def meta():
         """,
         unsafe_allow_html=True,
     )
-
-    problem = st.text_input('Problem', '')
-    solution = st.text_input('Solution', '')
-    fields = ["Fashion", "Water", "Energy", "Technology", "Agriculture"]
-    # keywords = [f for f in fields if f in problem.lower()]
-    st.write("Problem:", problem)
-    st.write(":", problem)
 
     # st.write("Relevent Keywords:", keywords)
     # new_expert = st.text_input('Add new expert:', '')

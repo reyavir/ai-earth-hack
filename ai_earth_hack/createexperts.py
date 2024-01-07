@@ -101,9 +101,9 @@ def prompt_for_domain_expert_idea_evaluation(category, ps_pair, rubric, api_key)
 
 # Given then output above, extract the numbers to calculate the total score by this expert
 def extract_total_score(evaluation, api_key):
-    # Extract all numbers using regular expression
-    numbers = re.findall(r'\d+', evaluation)
-    
+    # Extract numbers between a colon and a dash using regular expression
+    numbers = re.findall(r':\s*(\d+)\s*-', evaluation)
+    print(numbers)
     # Convert extracted numbers to integers and calculate the sum
     total = sum(int(number) for number in numbers)
     
@@ -206,13 +206,15 @@ def evaluate_and_output_score(ps_pair, rubric, api_key):
     domain_expert_eval = prompt_for_domain_expert_idea_evaluation(domains, rubric, ps_pair, api_key)
     all_evals.append(domain_expert_eval)
 
-    team_roles = ['Product Designer', 'Business Analyst', 'Marketing Specialist', 'Supply Chain Manager']
-    for role in team_roles:
-        all_evals.append(prompt_for_business_team_evaluation(role, sample_rubric, sample_ps_pair2, api_key))
+    # team_roles = ['Product Designer', 'Business Analyst', 'Marketing Specialist', 'Supply Chain Manager']
+    # for role in team_roles:
+    #     all_evals.append(prompt_for_business_team_evaluation(role, sample_rubric, sample_ps_pair2, api_key))
         
     total_score = 0
     for eval in all_evals:
-        total_score += extract_total_score(eval, api_key)
+        unit_score = extract_total_score(eval, api_key)
+        print(unit_score)
+        total_score += unit_score
         
     overall_reasoning = summarize_reasoning("\n".join(all_evals), api_key)
     
@@ -227,7 +229,8 @@ def process_dataframe_with_evaluation(df, rubric, api_key):
     for index, row in df.iterrows():
         # Join the 'Problem' and 'Solution' text
         ps_pair = f"Problem: {row['problem']}\nSolution: {row['solution']}"
+        print(ps_pair)
         # Call the function 'evaluate_pairs' on the ps_pair and store the result in the new column
         df.at[index, 'final_eval'], df.at[index, 'overall_reasoning'] = evaluate_and_output_score(ps_pair, rubric, api_key)
-    
+        print("Finished")
     return df
