@@ -8,7 +8,7 @@ import pandas as pd
 from io import StringIO
 from createexperts import * 
 
-# os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = ""
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # if the key already exists in the environment variables, it will use that, otherwise it will use the .env file to get the key
 if not OPENAI_API_KEY:
